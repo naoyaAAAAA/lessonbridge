@@ -1,0 +1,37 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI(
+    title="LessonBridge API",
+    description="API for teacher and parent communication around lesson reports.",
+    version="0.1.0",
+)
+
+origins = [
+    "http://localhost:5173",
+    "http://localhost:5174",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/")
+def read_root():
+    return {
+        "message": "LessonBridge API is running",
+        "status": "ok",
+    }
+
+
+@app.get("/api/health")
+def health_check():
+    return {
+        "status": "ok",
+        "service": "lessonbridge-backend",
+    }
