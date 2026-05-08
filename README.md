@@ -1,3 +1,11 @@
+## 日本語概要
+
+LessonBridgeは、塾講師が保護者全体に授業内容・宿題・家庭学習のポイントを共有し、保護者からの個別相談に対応できるWebアプリです。
+
+塾講師として働く中で、授業中に見えたクラス全体の課題や家庭で見てほしいポイントが、保護者に十分伝わりにくいことに課題を感じました。そこで、講師が全体向けの共有投稿を作成し、保護者がそれを読んだうえで先生に個別相談できる仕組みを作りました。
+
+このMVPでは、講師側アプリ・保護者側アプリ・FastAPIバックエンドを分けて実装しています。講師は投稿作成・共有・保護者返信確認・返信ができ、保護者は保護者コードでログインして共有投稿を閲覧し、先生に個別メッセージを送れます。
+
 # LessonBridge
 
 LessonBridge is a web application that helps cram school teachers share class-wide lesson updates with parents and continue private conversations with each parent.
