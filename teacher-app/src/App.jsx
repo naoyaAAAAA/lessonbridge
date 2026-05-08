@@ -18,6 +18,9 @@ function App() {
   const [health, setHealth] = useState(null);
   const [posts, setPosts] = useState([]);
   const [form, setForm] = useState(initialForm);
+  const [activePostId, setActivePostId] = useState(null);
+  const [threads, setThreads] = useState([]);
+  const [replyTexts, setReplyTexts] = useState({});
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
@@ -108,6 +111,71 @@ function App() {
       await fetchPosts();
     } catch (err) {
       setError("投稿の共有に失敗しました。backend を確認してください。");
+    }
+  }
+  async function handleLoadThreads(postId) {
+    setError("");
+    setNotice("");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/posts/${postId}/threads`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch threads");
+      }
+
+      const data = await response.json();
+      setActivePostId(postId);
+      setThreads(data);
+    } catch (err) {
+      setError("保護者返信の取得に失敗しました。backend を確認してください。");
+    }
+  }
+  function handleReplyChange(parentId, value) {
+    setReplyTexts((current) => ({
+      ...current,
+      [parentId]: value,
+    }));
+  }
+
+  async function handleSendTeacherReply(postId, parentId) {
+    setError("");
+    setNotice("");
+
+    const message = replyTexts[parentId];
+
+    if (!message || !message.trim()) {
+      setError("返信内容を入力してください。");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/posts/${postId}/threads/${parentId}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to send teacher reply");
+      }
+
+      setReplyTexts((current) => ({
+        ...current,
+        [parentId]: "",
+      }));
+
+      setNotice("保護者に返信しました。");
+      await handleLoadThreads(postId);
+    } catch (err) {
+      setError("返信の送信に失敗しました。backend を確認してください。");
     }
   }
   return (
@@ -293,6 +361,10 @@ function App() {
                   )}
 
                   <div className="post-actions">
+                    <button className="thread-button" onClick={() => handleLoadThreads(post.id)}>
+                      保護者返信を見る
+                    </button>
+
                     {!post.is_shared ? (
                       <button className="share-button" onClick={() => handleShare(post.id)}>
                         保護者に共有する
@@ -301,6 +373,63 @@ function App() {
                       <span className="shared-note">保護者アプリに表示中</span>
                     )}
                   </div>
+                  {activePostId === post.id && (
+                    <div className="thread-panel">
+                      <h4>保護者からの個別返信</h4>
+
+                      {threads.length === 0 ? (
+                        <p className="thread-empty">まだ保護者からの返信はありません。</p>
+                      ) : (
+                        <div className="thread-list">
+                          {threads.map((thread) => (
+                            <div className="thread-card" key={thread.parent.id}>
+                              <div className="thread-parent">
+                                <strong>{thread.parent.name}</strong>
+                                {thread.parent.child_name && (
+                                  <span>お子さま: {thread.parent.child_name}</span>
+                                )}
+                              </div>
+
+                              <div className="message-list">
+                                {thread.messages.map((message) => (
+                                  <div
+                                    className={
+                                      message.sender_type === "teacher"
+                                        ? "message-bubble teacher-message"
+                                        : "message-bubble parent-message"
+                                    }
+                                    key={message.id}
+                                  >
+                                    <p className="message-sender">
+                                      {message.sender_type === "teacher" ? "講師" : "保護者"}
+                                    </p>
+                                    <p>{message.message}</p>
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="reply-box">
+                                <textarea
+                                  value={replyTexts[thread.parent.id] || ""}
+                                  onChange={(event) =>
+                                    handleReplyChange(thread.parent.id, event.target.value)
+                                  }
+                                  rows="3"
+                                  placeholder={`${thread.parent.name}さんへの返信を入力`}
+                                />
+
+                                <button
+                                  className="reply-button"
+                                  onClick={() => handleSendTeacherReply(post.id, thread.parent.id)}
+                                >
+                                  返信する
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </article>
               ))}
             </div>

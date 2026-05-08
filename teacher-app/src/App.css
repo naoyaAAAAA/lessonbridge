@@ -330,3 +330,119 @@ select:focus {
   font-size: 14px;
   font-weight: 800;
 }
+
+.thread-button {
+  border: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #eef2ff;
+  color: #3730a3;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.thread-button:hover {
+  opacity: 0.9;
+}
+
+.thread-panel {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #e5eaf2;
+}
+
+.thread-panel h4 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+
+.thread-empty {
+  margin: 0;
+  color: #64748b;
+}
+
+.thread-list {
+  display: grid;
+  gap: 14px;
+}
+
+.thread-card {
+  padding: 16px;
+  border-radius: 16px;
+  background: white;
+  border: 1px solid #e5eaf2;
+}
+
+.thread-parent {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: #172033;
+}
+
+.thread-parent span {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.message-list {
+  display: grid;
+  gap: 10px;
+}
+
+.message-bubble {
+  padding: 12px 14px;
+  border-radius: 14px;
+  line-height: 1.6;
+}
+
+.message-bubble p {
+  margin: 0;
+}
+
+.message-sender {
+  margin-bottom: 4px !important;
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 0.75;
+}
+
+.parent-message {
+  background: #eff6ff;
+  color: #1e3a8a;
+}
+
+.teacher-message {
+  background: #ecfdf3;
+  color: #166534;
+}
+
+.reply-box {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e5eaf2;
+}
+
+.reply-box textarea {
+  background: #f8fafc;
+}
+
+.reply-button {
+  justify-self: end;
+  border: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #2454a6;
+  color: white;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.reply-button:hover {
+  opacity: 0.9;
+}
