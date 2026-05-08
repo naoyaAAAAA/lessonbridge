@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 const API_BASE_URL = "http://localhost:8000";
@@ -71,6 +71,7 @@ function App() {
       const data = await response.json();
       setParent(data);
       setNotice("ログインしました。");
+      localStorage.setItem("lessonbridge_parent_code", code);
 
       await fetchParentPosts(code);
     } catch (err) {
@@ -155,8 +156,28 @@ function App() {
       setError("メッセージの送信に失敗しました。");
     }
   }
+  async function loginWithCode(code) {
+    const response = await fetch(`${API_BASE_URL}/api/parent/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        parent_code: code,
+      }),
+    });
 
+    if (!response.ok) {
+      throw new Error("Auto login failed");
+    }
+
+    const data = await response.json();
+    setParent(data);
+    setParentCode(code);
+    await fetchParentPosts(code);
+  }
   function handleLogout() {
+    localStorage.removeItem("lessonbridge_parent_code");
     setParent(null);
     setParentCode("");
     setPosts([]);
@@ -166,7 +187,25 @@ function App() {
     setError("");
     setNotice("");
   }
+  useEffect(() => {
+    async function restoreLogin() {
+      const savedCode = localStorage.getItem("lessonbridge_parent_code");
 
+      if (!savedCode) {
+        return;
+      }
+
+      try {
+        await loginWithCode(savedCode);
+      } catch (err) {
+        localStorage.removeItem("lessonbridge_parent_code");
+        setParent(null);
+        setPosts([]);
+      }
+    }
+
+    restoreLogin();
+  }, []);
   return (
     <main className="app">
       <section className="hero">
